@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Carian ID DELIMa - SJK(C) Cheng Ming</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-student: #2563eb;
+      --primary-teacher: #d97706;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 25px 15px;
+      color: var(--text-main);
+    }
+
+    /* 1. HEADER LOGO SEKOLAH */
+    .app-header {
+      text-align: center;
+      margin-bottom: 25px;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    .school-logo-wrap {
+      width: 95px;
+      height: 95px;
+      margin: 0 auto 12px;
+      background: #ffffff;
+      border-radius: 50%;
+      padding: 6px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .school-logo-wrap:hover {
+      transform: scale(1.08) rotate(2deg);
+    }
+
+    .school-logo-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .school-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .school-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* 2. KONTENA UTAMA LOG MASUK */
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      backdrop-filter: blur(15px);
+      border-radius: 24px;
+      padding: 30px 25px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .role-switcher {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 14px;
+      padding: 5px;
+      margin-bottom: 25px;
+    }
+
+    .role-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .role-tab.active.student-active {
+      background: var(--primary-student);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .role-tab.active.teacher-active {
+      background: var(--primary-teacher);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      color: #94a3b8;
+      font-size: 15px;
+    }
+
+    .custom-input {
+      width: 100%;
+      padding: 13px 42px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 14px;
+      background: #f8fafc;
+      color: #0f172a;
+      transition: all 0.25s ease;
+      outline: none;
+    }
+
+    .custom-input:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 14px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .btn-login-main {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      margin-top: 10px;
+    }
+    .btn-login-main:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* 3. MODAL NOTIS PERINGATAN RASMI */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 15px;
+    }
+
+    .notice-modal-wrapper {
+      background: #ffffff;
+      border-radius: 18px;
+      max-width: 620px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 2px solid #b91c1c;
+      animation: scaleUp 0.3s ease;
+    }
+
+    .close-btn-img {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: #dc2626;
+      color: white;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 10;
+      transition: 0.2s;
+    }
+    .close-btn-img:hover {
+      transform: scale(1.1);
+      background: #991b1b;
+    }
+
+    .notice-header-bar {
+      background: #b91c1c;
+      color: #ffffff;
+      text-align: center;
+      padding: 18px 20px;
+      border-bottom: 2px solid #991b1b;
+    }
+
+    .notice-header-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .notice-meta-bar {
+      background: #0f2b48;
+      color: #ffffff;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 10px 18px;
+      font-size: 12px;
+      border-bottom: 1px solid #1e3a8a;
+    }
+
+    .notice-scroll-area {
+      overflow-y: auto;
+      padding: 20px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .prohibit-box {
+      background: #fffafa;
+      border: 1.5px solid #ef4444;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 14px 0;
+    }
+
+    .prohibit-title {
+      color: #b91c1c;
+      font-weight: 800;
+      font-size: 13.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prohibit-list {
+      padding-left: 18px;
+      margin: 0;
+    }
+
+    .prohibit-list li {
+      margin-bottom: 6px;
+      font-size: 12.5px;
+      color: #1e293b;
+    }
+
+    .warning-penalty {
+      background: #fef3c7;
+      border-left: 4px solid #d97706;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #92400e;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    .slogan-banner {
+      text-align: center;
+      font-weight: 800;
+      color: #b91c1c;
+      font-size: 13.5px;
+      letter-spacing: 0.5px;
+      margin: 14px 0 6px;
+    }
+
+    .footer-dept {
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+
+    .notice-action-bar {
+      text-align: center;
+      padding: 14px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-agree {
+      background: #b91c1c;
+      color: #ffffff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-agree:hover {
+      background: #991b1b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(185, 28, 28, 0.35);
+    }
+
+    /* 4. DASHBOARD CARIAN */
+    #dashboardArea {
+      display: none;
+      width: 100%;
+      max-width: 680px;
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .dash-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #f1f5f9;
+      padding-bottom: 15px;
+      margin-bottom: 22px;
+    }
+
+    .dash-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    .badge-student { background: #dbeafe; color: #1e40af; }
+    .badge-teacher { background: #fef3c7; color: #92400e; }
+
+    .btn-logout {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .btn-logout:hover { background: #fca5a5; }
+
+    .search-box-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .search-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .search-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .search-btn:hover { background: #1d4ed8; }
+
+    .result-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid #2563eb;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .res-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf2f7;
+      font-size: 13.5px;
+    }
+    .res-row:last-child { border-bottom: none; }
+
+    .res-label { font-weight: 600; color: #64748b; }
+    .res-val { font-weight: 700; color: #0f172a; font-family: monospace; font-size: 14px; }
+
+    .copy-btn {
+      background: #e2e8f0;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      margin-left: 8px;
+      transition: 0.2s;
+    }
+    .copy-btn:hover { background: #cbd5e1; }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <!-- [1] LOGO SEKOLAH & TAJUK -->
+  <header class="app-header">
+    <div class="school-logo-wrap">
+      <img src="https://i.postimg.cc/nM7PzrcD/image.png" alt="Logo SJK(C) Cheng Ming" class="school-logo-img">
+    </div>
+    <h1 class="school-title">SJK(C) CHENG MING KENINGAU</h1>
+    <p class="school-subtitle">SISTEM CARIAN ID DELIMa</p>
+  </header>
+
+  <!-- [2] KAD LOG MASUK -->
+  <div id="loginArea" class="login-container">
+    <div class="role-switcher">
+      <button class="role-tab active student-active" id="tabStudent" onclick="switchRole('STUDENT')">
+        <i class="fa-solid fa-graduation-cap"></i> Murid
+      </button>
+      <button class="role-tab" id="tabTeacher" onclick="switchRole('TEACHER')">
+        <i class="fa-solid fa-chalkboard-user"></i> Guru
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label" id="labelUsername">Username Murid</label>
+      <div class="input-field-wrapper">
+        <i class="fa-solid fa-user input-icon"></i>
+        <input type="text" id="inputUser" class="custom-input" placeholder="Masukkan Username">
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Kata Laluan</label>
+      <div class="input-field-wrapper">
+        <i class="fa-solid fa-lock input-icon"></i>
+        <input type="password" id="inputPass" class="custom-input" placeholder="Masukkan Kata Laluan">
+        <button type="button" class="toggle-pass-btn" onclick="togglePasswordVisibility()">
+          <i class="fa-regular fa-eye" id="eyeIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-login-main" id="btnLogin" onclick="hantarLogin()">
+      <span>Log Masuk</span>
+      <i class="fa-solid fa-arrow-right-long"></i>
+    </button>
+  </div>
+
+  <!-- [3] POP-UP NOTIS RASMI -->
+  <div id="noticeModal" class="modal-overlay">
+    <div class="notice-modal-wrapper">
+      <button class="close-btn-img" onclick="tutupNotisDanBukaDashboard()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="notice-header-bar">
+        <div class="notice-header-title">
+          <i class="fa-solid fa-shield-halved"></i> NOTIS LARANGAN PENYALAHGUNAAN DATA DAN ID DELIMa MURID
+        </div>
+      </div>
+
+      <div class="notice-meta-bar">
+        <span><i class="fa-solid fa-users"></i> <strong>Kepada:</strong> Semua Guru, Murid & Warga Sekolah</span>
+        <span><i class="fa-solid fa-file-shield"></i> <strong>Perkara:</strong> Larangan Penyalahgunaan Data</span>
+      </div>
+
+      <div class="notice-scroll-area">
+        <p style="margin-bottom: 10px;">
+          Dimaklumkan bahawa semua data dan maklumat murid adalah <strong>sulit</strong> dan hendaklah dikendalikan dengan penuh tanggungjawab serta mematuhi ketetapan keselamatan yang ditetapkan oleh pihak sekolah dan <strong>Kementerian Pendidikan Malaysia (KPM)</strong>.
+        </p>
+
+        <div class="prohibit-box">
+          <div class="prohibit-title">
+            <i class="fa-solid fa-triangle-exclamation"></i> Sehubungan itu, DILARANG sama sekali:
+          </div>
+          <ul class="prohibit-list">
+            <li>Menyebarkan ID DELIMa, kata laluan atau maklumat log masuk murid kepada pihak yang tidak berkaitan.</li>
+            <li>Memuat naik atau berkongsi nama, nombor kad pengenalan, gambar, maklumat akademik, nombor telefon atau maklumat peribadi murid tanpa kebenaran.</li>
+            <li>Menggunakan akaun DELIMa atau maklumat murid untuk tujuan peribadi atau tujuan yang tidak dibenarkan.</li>
+            <li>Mengambil, menyalin, menyimpan atau memindahkan data murid daripada sistem/aplikasi sekolah tanpa kebenaran.</li>
+            <li>Mendedahkan atau menyebarkan data murid melalui WhatsApp, Telegram, media sosial, laman web atau mana-mana platform awam tanpa kebenaran.</li>
+            <li>Memberikan akses kepada akaun atau data murid kepada individu/pihak luar tanpa kebenaran yang sewajarnya.</li>
+            <li>Menggunakan data murid dengan cara yang boleh menyebabkan pencerobohan privasi, kerugian, gangguan atau penyalahgunaan identiti.</li>
+          </ul>
+        </div>
+
+        <div class="warning-penalty">
+          <i class="fa-solid fa-gavel"></i> <strong>Peringatan Tindakan:</strong> Sebarang pelanggaran terhadap arahan ini boleh dikenakan tindakan pengurusan dan tatatertib yang sewajarnya, serta boleh dirujuk kepada pihak berkuasa/agensi berkaitan sekiranya melibatkan kesalahan di bawah undang-undang yang berkuat kuasa.
+        </div>
+
+        <div class="slogan-banner">
+          JAGA DATA MURID. JAGA KERAHSIAAN. JANGAN SALAHGUNAKAN ID DELIMa.
+        </div>
+        <p style="text-align: center; font-size: 12px; color: #475569; margin-bottom: 8px;">
+          Kerjasama dan perhatian semua pihak amat dihargai.
+        </p>
+
+        <div class="footer-dept">
+          UNIT ICT / PENTADBIRAN<br>
+          SJK(C) CHENG MING, KENINGAU
+        </div>
+      </div>
+
+      <div class="notice-action-bar">
+        <button class="btn-agree" onclick="tutupNotisDanBukaDashboard()">
+          <i class="fa-solid fa-circle-check"></i> SAYA FAHAM & TERUSKAN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- [4] DASHBOARD CARIAN -->
+  <div id="dashboardArea">
+    <div class="dash-box" id="dashCard">
+      <div class="dash-header">
+        <div>
+          <h2 id="dashTitleText" class="dash-title">Carian ID DELIMa</h2>
+          <span id="roleBadge" class="role-badge"></span>
+        </div>
+        <button class="btn-logout" onclick="logKeluarSistem()">
+          <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+      </div>
+
+      <div class="search-box-wrapper">
+        <input type="text" id="txtCariNama" class="search-input" placeholder="Taip nama penuh atau sebahagian nama..." onkeypress="if(event.key==='Enter') mulakanCarian()">
+        <button class="search-btn" id="btnCariAction" onclick="mulakanCarian()">
+          <i class="fa-solid fa-magnifying-glass"></i> Cari
+        </button>
+      </div>
+
+      <div id="loadingStatus" style="display:none; text-align:center; padding:18px; color:#64748b; font-weight:600;">
+        <i class="fa-solid fa-spinner fa-spin"></i> Sedang mencari dalam pangkalan data...
+      </div>
+
+      <div id="keputusanCarian"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT: SAMBUNGAN GOOGLE APPS SCRIPT API -->
+  <script>
+    // Link Google Apps Script Web App anda
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2Zlq9sP6h6PJTI5UcCVWZFnYjKPBImdeVXO7nHRhVgR_vgfdENdotjZoJREXMVSRY/exec';
+
+    let activeRole = 'STUDENT';
+
+    function switchRole(role) {
+      activeRole = role;
+      const tabStu = document.getElementById('tabStudent');
+      const tabTch = document.getElementById('tabTeacher');
+      const lblUser = document.getElementById('labelUsername');
+      const inputUser = document.getElementById('inputUser');
+
+      if (role === 'STUDENT') {
+        tabStu.className = 'role-tab active student-active';
+        tabTch.className = 'role-tab';
+        lblUser.innerText = 'Username Murid';
+        inputUser.placeholder = 'murid';
+      } else {
+        tabTch.className = 'role-tab active teacher-active';
+        tabStu.className = 'role-tab';
+        lblUser.innerText = 'Username Guru';
+        inputUser.placeholder = 'guru';
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('inputPass');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.className = 'fa-regular fa-eye-slash';
+      } else {
+        passInput.type = 'password';
+        eyeIcon.className = 'fa-regular fa-eye';
+      }
+    }
+
+    // Fungsi Log Masuk ke Google Apps Script
+    async function hantarLogin() {
+      const u = document.getElementById('inputUser').value.trim();
+      const p = document.getElementById('inputPass').value.trim();
+
+      if (!u || !p) {
+        alert("Sila masukkan Username dan Kata Laluan!");
+        return;
+      }
+
+      const btn = document.getElementById('btnLogin');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa...';
+      btn.disabled = true;
+
+      try {
+        const query = `?action=login&role=${encodeURIComponent(activeRole)}&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`;
+        const response = await fetch(SCRIPT_URL + query, { method: 'GET' });
+        const res = await response.json();
+
+        btn.innerHTML = '<span>Log Masuk</span> <i class="fa-solid fa-arrow-right-long"></i>';
+        btn.disabled = false;
+
+        if (res.success) {
+          document.getElementById('noticeModal').style.display = 'flex';
+        } else {
+          alert(res.message || "Log masuk gagal!");
+        }
+      } catch (err) {
+        btn.innerHTML = '<span>Log Masuk</span> <i class="fa-solid fa-arrow-right-long"></i>';
+        btn.disabled = false;
+        alert("Gagal menyambung ke server Apps Script. Sila semak sambungan internet anda.");
+      }
+    }
+
+    function tutupNotisDanBukaDashboard() {
+      document.getElementById('noticeModal').style.display = 'none';
+      document.getElementById('loginArea').style.display = 'none';
+      document.getElementById('dashboardArea').style.display = 'block';
+
+      const title = document.getElementById('dashTitleText');
+      const badge = document.getElementById('roleBadge');
+      const btnCari = document.getElementById('btnCariAction');
+
+      if (activeRole === 'STUDENT') {
+        title.innerText = "Carian ID DELIMa (Murid)";
+        badge.innerText = "PANGKALAN DATA: EMAIL MURID";
+        badge.className = "role-badge badge-student";
+        btnCari.style.background = "#2563eb";
+      } else {
+        title.innerText = "Carian ID DELIMa (Guru)";
+        badge.innerText = "PANGKALAN DATA: EMAIL GURU";
+        badge.className = "role-badge badge-teacher";
+        btnCari.style.background = "#d97706";
+      }
+    }
+
+    // Fungsi Carian Nama ke Google Apps Script
+    async function mulakanCarian() {
+      const nama = document.getElementById('txtCariNama').value.trim();
+      if (!nama) {
+        alert("Sila masukkan nama terlebih dahulu.");
+        return;
+      }
+
+      document.getElementById('loadingStatus').style.display = 'block';
+      document.getElementById('keputusanCarian').innerHTML = '';
+
+      try {
+        const query = `?action=search&role=${encodeURIComponent(activeRole)}&name=${encodeURIComponent(nama)}`;
+        const response = await fetch(SCRIPT_URL + query, { method: 'GET' });
+        const res = await response.json();
+
+        document.getElementById('loadingStatus').style.display = 'none';
+        paparHasil(res);
+      } catch (err) {
+        document.getElementById('loadingStatus').style.display = 'none';
+        alert("Gagal memuat turun keputusan carian. Sila cuba lagi.");
+      }
+    }
+
+    function salinTeks(btn, text) {
+      navigator.clipboard.writeText(text);
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Disalin';
+      setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+    }
+
+    // Papar Hasil: HANYA NAMA, EMEL & KATA LALUAN
+    function paparHasil(res) {
+      const container = document.getElementById('keputusanCarian');
+      if (res && res.success && res.data && res.data.length > 0) {
+        let html = '';
+        res.data.forEach(item => {
+          html += `
+            <div class="result-card" style="border-left-color: ${activeRole === 'STUDENT' ? '#2563eb' : '#d97706'};">
+              <div class="res-row">
+                <span class="res-label"><i class="fa-solid fa-user"></i> Nama</span>
+                <span class="res-val">${item.name}</span>
+              </div>
+              <div class="res-row">
+                <span class="res-label"><i class="fa-solid fa-envelope"></i> Emel DELIMa</span>
+                <div>
+                  <span class="res-val" style="color:#2563eb;">${item.email}</span>
+                  <button class="copy-btn" onclick="salinTeks(this, '${item.email}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+              </div>
+              <div class="res-row">
+                <span class="res-label"><i class="fa-solid fa-key"></i> Kata Laluan</span>
+                <div>
+                  <span class="res-val" style="color:#dc2626;">${item.password}</span>
+                  <button class="copy-btn" onclick="salinTeks(this, '${item.password}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = `<div style="text-align:center; padding:25px; color:#94a3b8;"><i class="fa-solid fa-circle-exclamation"></i> Tiada rekod dijumpai untuk "${document.getElementById('txtCariNama').value}".</div>`;
+      }
+    }
+
+    function logKeluarSistem() {
+      document.getElementById('txtCariNama').value = '';
+      document.getElementById('keputusanCarian').innerHTML = '';
+      document.getElementById('inputUser').value = '';
+      document.getElementById('inputPass').value = '';
+      document.getElementById('dashboardArea').style.display = 'none';
+      document.getElementById('loginArea').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
