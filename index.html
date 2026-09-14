@@ -545,7 +545,7 @@
       <label class="input-label" id="labelUsername">Username</label>
       <div class="input-field-wrapper">
         <i class="fa-solid fa-user input-icon"></i>
-        <input type="text" id="inputUser" class="custom-input" placeholder="Masukkan Username">
+        <input type="text" id="inputUser" class="custom-input" placeholder="          ">
       </div>
     </div>
 
@@ -553,7 +553,7 @@
       <label class="input-label">Kata Laluan</label>
       <div class="input-field-wrapper">
         <i class="fa-solid fa-lock input-icon"></i>
-        <input type="password" id="inputPass" class="custom-input" placeholder="Masukkan Kata Laluan">
+        <input type="password" id="inputPass" class="custom-input" placeholder="           ">
         <button type="button" class="toggle-pass-btn" onclick="togglePasswordVisibility()">
           <i class="fa-regular fa-eye" id="eyeIcon"></i>
         </button>
@@ -675,12 +675,12 @@
         tabStu.className = 'role-tab active student-active';
         tabTch.className = 'role-tab';
         lblUser.innerText = 'Username';
-        inputUser.placeholder = 'Masukkan Username';
+        inputUser.placeholder = '          ';
       } else {
         tabTch.className = 'role-tab active teacher-active';
         tabStu.className = 'role-tab';
         lblUser.innerText = 'Username';
-        inputUser.placeholder = 'Masukkan Username';
+        inputUser.placeholder = '          ';
       }
     }
 
